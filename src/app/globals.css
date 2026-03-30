@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Primary */
+  --color-primary: #00658d;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #c6e7ff;
+  --color-on-primary-container: #001e2e;
+  --color-primary-fixed: #c6e7ff;
+  --color-primary-fixed-dim: #83cfff;
+
+  /* Secondary */
+  --color-secondary: #9b4500;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #ffdbc9;
+  --color-on-secondary-container: #763300;
+  --color-secondary-fixed: #ffdbc9;
+  --color-secondary-fixed-dim: #ffb68d;
+
+  /* Tertiary */
+  --color-tertiary: #7b3bc3;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #eedbff;
+  --color-on-tertiary-container: #2d004e;
+  --color-tertiary-fixed: #eedbff;
+  --color-tertiary-fixed-dim: #dab9ff;
+
+  /* Surfaces */
+  --color-background: #f2fbff;
+  --color-on-background: #121d21;
+  --color-surface: #f2fbff;
+  --color-surface-bright: #f2fbff;
+  --color-surface-dim: #d0dce1;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #e9f6fb;
+  --color-surface-container: #e4f0f5;
+  --color-surface-container-high: #deeaef;
+  --color-surface-container-highest: #d8e4ea;
+  --color-surface-variant: #d8e4ea;
+  --color-on-surface: #121d21;
+  --color-on-surface-variant: #344a52;
+
+  /* Error */
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #410002;
+
+  /* Outline */
+  --color-outline: #647b83;
+  --color-outline-variant: #b3cad4;
+
+  /* Inverse */
+  --color-inverse-surface: #273236;
+  --color-inverse-on-surface: #e6f3f8;
+  --color-inverse-primary: #83cfff;
+
+  /* Surface tint */
+  --color-surface-tint: #00658d;
+
+  /* Font */
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+
+  /* Border radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Glassmorphism utilities */
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0px 12px 32px rgba(18, 29, 33, 0.08);
+}
+
+/* Vibrant aura gradient */
+.bg-vibrant-aura {
+  background: linear-gradient(135deg, #00658d 0%, #7b3bc3 100%);
+}
+
+/* Hide scrollbar */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Leaflet fixes */
+.leaflet-container {
+  z-index: 0;
+  font-family: var(--font-sans);
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0px 12px 32px rgba(18, 29, 33, 0.06) !important;
+  border-radius: 1rem !important;
+  overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  border: none !important;
+  color: #00658d !important;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  font-size: 18px !important;
+}
+
+/* Ambient shadow */
+.shadow-ambient {
+  box-shadow: 0px 12px 32px rgba(18, 29, 33, 0.06);
+}
+
+.shadow-ambient-lg {
+  box-shadow: 0px 12px 32px rgba(18, 29, 33, 0.1);
+}
