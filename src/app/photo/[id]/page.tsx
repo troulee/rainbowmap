@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createClient();
   const { data: photo } = await supabase
     .from("photos")
-    .select("*, profiles(username, avatar_url)")
+    .select("*, profiles!photos_user_id_fkey(username, avatar_url)")
     .eq("id", id)
     .single();
 
@@ -32,7 +32,7 @@ export default async function PhotoPage({ params }: Props) {
 
   const { data: photo } = await supabase
     .from("photos")
-    .select("*, profiles(username, avatar_url)")
+    .select("*, profiles!photos_user_id_fkey(username, avatar_url)")
     .eq("id", id)
     .single();
 

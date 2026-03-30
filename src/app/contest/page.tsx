@@ -20,7 +20,7 @@ export default async function ContestPage() {
 
   const { data: monthlyPhotos } = await supabase
     .from("photos")
-    .select("*, profiles(username, avatar_url)")
+    .select("*, profiles!photos_user_id_fkey(username, avatar_url)")
     .gte("created_at", startOfMonth.toISOString())
     .order("vote_count", { ascending: false })
     .limit(20);

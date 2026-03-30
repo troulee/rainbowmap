@@ -10,7 +10,7 @@ export default async function HomePage() {
 
   const { data: photos } = await supabase
     .from("photos")
-    .select("*, profiles(username, avatar_url)")
+    .select("*, profiles!photos_user_id_fkey(username, avatar_url)")
     .order("created_at", { ascending: false })
     .limit(50);
 
