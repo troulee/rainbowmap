@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLang } from "./LangProvider";
 
 const navItems = [
-  { href: "/", icon: "home", label: "Home" },
-  { href: "/explore", icon: "explore", label: "Explore" },
-  { href: "/upload", icon: "add_circle", label: "Upload" },
-  { href: "/contest", icon: "military_tech", label: "Contest" },
-  { href: "/profile", icon: "person", label: "Profile" },
+  { href: "/", icon: "home", labelKey: "nav.home" },
+  { href: "/explore", icon: "explore", labelKey: "nav.explore" },
+  { href: "/upload", icon: "add_circle", labelKey: "nav.upload" },
+  { href: "/contest", icon: "military_tech", labelKey: "nav.contest" },
+  { href: "/profile", icon: "person", labelKey: "nav.profile" },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { t } = useLang();
 
-  // Hide on auth pages
   if (pathname.startsWith("/auth")) return null;
 
   return (
@@ -45,7 +46,7 @@ export default function BottomNav() {
                 {item.icon}
               </span>
               {!isActive && (
-                <span className="text-[10px] font-medium mt-0.5">{item.label}</span>
+                <span className="text-[10px] font-medium mt-0.5">{t(item.labelKey)}</span>
               )}
             </Link>
           );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TopBar from "@/components/TopBar";
 import BottomNav from "@/components/BottomNav";
+import LangProvider from "@/components/LangProvider";
 
 export const metadata: Metadata = {
   title: "RainbowMap - Condividi arcobaleni dal mondo",
@@ -27,9 +28,11 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-on-surface">
-        <TopBar />
-        <main className="flex-1 pt-16 pb-24">{children}</main>
-        <BottomNav />
+        <LangProvider>
+          <TopBar />
+          <main className="flex-1 pt-16 pb-24">{children}</main>
+          <BottomNav />
+        </LangProvider>
       </body>
     </html>
   );
