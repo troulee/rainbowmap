@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Foto del mese | RainbowMap",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ContestPage() {
   const supabase = await createClient();

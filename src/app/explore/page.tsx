@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Esplora la mappa | RainbowMap",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ExplorePage() {
   const supabase = await createClient();

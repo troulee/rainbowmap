@@ -3,7 +3,7 @@ import PhotoCard from "@/components/PhotoCard";
 import type { PhotoWithProfile } from "@/lib/types";
 import Link from "next/link";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const supabase = await createClient();
