@@ -19,18 +19,6 @@ export default async function HomePage() {
 
   return (
     <div className="px-4 md:px-8 max-w-4xl mx-auto space-y-8">
-      {/* Search bar */}
-      <div className="relative group">
-        <span className="material-symbols-outlined absolute inset-y-0 left-4 flex items-center text-on-surface-variant pointer-events-none">
-          search
-        </span>
-        <input
-          type="text"
-          placeholder="Cerca arcobaleni..."
-          className="w-full bg-surface-container-highest border-none rounded-xl py-4 pl-12 pr-4 text-sm placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/40 focus:outline-none transition-all"
-        />
-      </div>
-
       {/* Filter chips */}
       <div className="flex gap-2 overflow-x-auto hide-scrollbar">
         <button className="bg-vibrant-aura text-white text-sm font-semibold px-5 py-2 rounded-full whitespace-nowrap active:scale-95 transition-transform">

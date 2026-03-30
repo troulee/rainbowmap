@@ -8,18 +8,30 @@ export default async function TopBar() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="fixed top-0 w-full z-50 glass-nav h-16 flex items-center px-6">
-      <div className="flex items-center justify-between w-full max-w-screen-2xl mx-auto">
+    <header className="fixed top-0 w-full z-50 glass-nav h-16 flex items-center px-4 md:px-6">
+      <div className="flex items-center gap-3 w-full max-w-screen-2xl mx-auto">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
           <span className="material-symbols-outlined text-2xl text-primary">palette</span>
-          <span className="text-xl font-extrabold tracking-tight bg-gradient-to-br from-primary to-tertiary bg-clip-text text-transparent">
+          <span className="hidden sm:inline text-xl font-extrabold tracking-tight bg-gradient-to-br from-primary to-tertiary bg-clip-text text-transparent">
             RainbowMap
           </span>
         </Link>
 
+        {/* Search bar */}
+        <div className="flex-1 max-w-lg mx-auto relative">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg pointer-events-none">
+            search
+          </span>
+          <input
+            type="text"
+            placeholder="Cerca arcobaleni..."
+            className="w-full bg-surface-container-highest border-none rounded-full py-2.5 pl-10 pr-4 text-sm placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/40 focus:outline-none transition-all"
+          />
+        </div>
+
         {/* Right actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           {user ? (
             <Link
               href="/profile"

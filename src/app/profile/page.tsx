@@ -20,11 +20,12 @@ export default async function ProfilePage() {
   }
 
   // Fetch profile
-  const { data: profile } = await supabase
+  const { data: profileData } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
+  const profile = profileData as { id: string; username: string; avatar_url: string | null; created_at: string } | null;
 
   // Fetch user photos
   const { data: photos } = await supabase

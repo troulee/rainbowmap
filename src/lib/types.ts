@@ -77,22 +77,43 @@ export type Database = {
           user_id?: string;
           photo_id?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "votes_user_id_fkey";
-            columns: ["user_id"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "votes_photo_id_fkey";
-            columns: ["photo_id"];
-            isOneToOne: false;
-            referencedRelation: "photos";
-            referencedColumns: ["id"];
-          }
-        ];
+        Relationships: [];
+      };
+      comments: {
+        Row: {
+          id: string;
+          user_id: string;
+          photo_id: string;
+          text: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          photo_id: string;
+          text: string;
+        };
+        Update: {
+          text?: string;
+        };
+        Relationships: [];
+      };
+      ratings: {
+        Row: {
+          user_id: string;
+          photo_id: string;
+          score: number;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          photo_id: string;
+          score: number;
+        };
+        Update: {
+          score?: number;
+        };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

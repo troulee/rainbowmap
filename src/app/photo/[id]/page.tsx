@@ -1,10 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import VoteButton from "@/components/VoteButton";
+import StarRating from "@/components/StarRating";
+import CommentSection from "@/components/CommentSection";
 import { formatDate, compassLabel } from "@/lib/utils";
 import Link from "next/link";
 import type { PhotoWithProfile } from "@/lib/types";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -44,6 +48,7 @@ export default async function PhotoPage({ params }: Props) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Check vote
   let hasVoted = false;
   if (user) {
     const { data: vote } = await supabase
@@ -54,6 +59,36 @@ export default async function PhotoPage({ params }: Props) {
       .single();
     hasVoted = !!vote;
   }
+
+  // Fetch user's rating
+  let userRating: number | null = null;
+  if (user) {
+    const { data: rating } = await supabase
+      .from("ratings")
+      .select("score")
+      .eq("user_id", user.id)
+      .eq("photo_id", id)
+      .single();
+    userRating = (rating as { score: number } | null)?.score ?? null;
+  }
+
+  // Fetch average rating
+  const { data: allRatings } = await supabase
+    .from("ratings")
+    .select("score")
+    .eq("photo_id", id);
+
+  const ratings = allRatings ?? [];
+  const avgScore = ratings.length > 0
+    ? ratings.reduce((sum, r) => sum + (r as { score: number }).score, 0) / ratings.length
+    : 0;
+
+  // Fetch comments
+  const { data: comments } = await supabase
+    .from("comments")
+    .select("id, text, created_at, profiles!comments_user_id_fkey(username, avatar_url)")
+    .eq("photo_id", id)
+    .order("created_at", { ascending: true });
 
   return (
     <div className="max-w-2xl mx-auto px-4">
@@ -73,7 +108,6 @@ export default async function PhotoPage({ params }: Props) {
           alt="Rainbow"
           className="w-full h-full object-cover"
         />
-        {/* Gradient overlay at bottom */}
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 via-transparent" />
       </div>
 
@@ -152,48 +186,24 @@ export default async function PhotoPage({ params }: Props) {
         </a>
       </div>
 
-      {/* Rating section */}
-      <div className="bg-vibrant-aura rounded-lg p-8 text-white text-center mb-6">
-        <h3 className="font-bold text-lg mb-2">Valuta questo arcobaleno</h3>
-        <p className="text-sm text-white/80 mb-4">
-          Quanto ti ha colpito questo spettro atmosferico?
-        </p>
-        <div className="flex justify-center gap-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 active:scale-90 transition-all"
-            >
-              <span className="material-symbols-outlined text-lg">star</span>
-            </button>
-          ))}
-        </div>
+      {/* Star Rating */}
+      <div className="mb-6">
+        <StarRating
+          photoId={p.id}
+          userId={user?.id ?? null}
+          initialScore={userRating}
+          averageScore={avgScore}
+          totalRatings={ratings.length}
+        />
       </div>
 
-      {/* Comments section placeholder */}
+      {/* Comments */}
       <div className="mb-6">
-        <h3 className="font-bold text-on-surface mb-4">Commenti</h3>
-
-        <div className="space-y-4">
-          <p className="text-sm text-on-surface-variant text-center py-8">
-            I commenti saranno disponibili presto.
-          </p>
-        </div>
-
-        {/* Comment input */}
-        <div className="flex items-center gap-3 bg-surface-container-low p-2 pr-4 rounded-full mt-4">
-          <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-sm text-primary">person</span>
-          </div>
-          <input
-            type="text"
-            placeholder="Scrivi un commento..."
-            className="flex-1 bg-transparent text-sm placeholder:text-on-surface-variant/50 focus:outline-none"
-          />
-          <button className="text-primary hover:text-primary/80 transition-colors">
-            <span className="material-symbols-outlined">send</span>
-          </button>
-        </div>
+        <CommentSection
+          photoId={p.id}
+          userId={user?.id ?? null}
+          initialComments={(comments ?? []) as any}
+        />
       </div>
 
       {/* Metadata footer */}
