@@ -8,17 +8,31 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const { data: photos } = await supabase
-    .from("photos")
-    .select("*, profiles!photos_user_id_fkey(username, avatar_url)")
-    .order("created_at", { ascending: false })
-    .limit(50);
+  const [{ data: photos }, { count: userCount }] = await Promise.all([
+    supabase
+      .from("photos")
+      .select("*, profiles!photos_user_id_fkey(username, avatar_url)")
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true }),
+  ]);
 
   const typedPhotos = (photos ?? []) as PhotoWithProfile[];
   const trendingPhotos = [...typedPhotos].sort((a, b) => b.vote_count - a.vote_count).slice(0, 10);
 
   return (
     <div className="px-4 md:px-8 max-w-4xl mx-auto space-y-8">
+      {/* User counter */}
+      <div className="flex items-center justify-center gap-3 bg-surface-container-low rounded-lg py-3 px-5">
+        <span className="material-symbols-outlined text-primary">group</span>
+        <p className="text-sm text-on-surface-variant">
+          <span className="font-extrabold text-on-surface">{(userCount ?? 0).toLocaleString("it-IT")}</span>{" "}
+          rainbow chasers iscritti
+        </p>
+      </div>
+
       {/* Filter chips */}
       <div className="flex gap-2 overflow-x-auto hide-scrollbar">
         <button className="bg-vibrant-aura text-white text-sm font-semibold px-5 py-2 rounded-full whitespace-nowrap active:scale-95 transition-transform">

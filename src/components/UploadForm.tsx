@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/client";
 import { extractExif, compressImage, compressThumbnail } from "@/lib/utils";
+import { detectAndBlurFaces } from "@/lib/faceBlur";
 import CompassPicker from "./CompassPicker";
 
 const LocationPicker = dynamic(() => import("./LocationPicker"), {
@@ -32,12 +33,31 @@ export default function UploadForm({ userId }: { userId: string }) {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [faceWarning, setFaceWarning] = useState<string | null>(null);
+  const [detectingFaces, setDetectingFaces] = useState(false);
 
   const handleFileChange = useCallback(async (selectedFile: File) => {
-    setFile(selectedFile);
-    setPreview(URL.createObjectURL(selectedFile));
+    setFaceWarning(null);
+    setDetectingFaces(true);
 
-    const exif = await extractExif(selectedFile);
+    // Extract EXIF in parallel with face detection
+    const [exif, faceResult] = await Promise.all([
+      extractExif(selectedFile),
+      detectAndBlurFaces(selectedFile).catch(() => null),
+    ]);
+
+    let finalFile = selectedFile;
+    if (faceResult && faceResult.facesFound > 0 && faceResult.blurredFile) {
+      finalFile = faceResult.blurredFile;
+      setFaceWarning(
+        `Rilevat${faceResult.facesFound === 1 ? "o" : "i"} ${faceResult.facesFound} vis${faceResult.facesFound === 1 ? "o" : "i"}: ${faceResult.facesFound === 1 ? "è stato oscurato" : "sono stati oscurati"} automaticamente.`
+      );
+    }
+
+    setFile(finalFile);
+    setPreview(URL.createObjectURL(finalFile));
+    setDetectingFaces(false);
+
     if (exif.latitude != null && exif.longitude != null) {
       setLatitude(exif.latitude);
       setLongitude(exif.longitude);
@@ -139,33 +159,59 @@ export default function UploadForm({ userId }: { userId: string }) {
 
       {/* Step 0: Photo */}
       {step === 0 && (
-        <div
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
-          onClick={() => document.getElementById("file-input")?.click()}
-          className="aspect-[4/3] bg-surface-container-low rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container transition-colors"
-        >
-          {preview ? (
-            <img src={preview} alt="Anteprima" className="max-h-full rounded-lg object-contain" />
-          ) : (
-            <>
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <span className="material-symbols-outlined text-3xl text-primary">cloud_upload</span>
+        <div className="space-y-4">
+          {/* Face reminder */}
+          <div className="flex items-start gap-3 bg-tertiary/10 rounded-lg p-4">
+            <span className="material-symbols-outlined text-tertiary shrink-0 mt-0.5">face_retouching_off</span>
+            <p className="text-xs text-on-surface-variant leading-relaxed">
+              <span className="font-bold text-on-surface">Attenzione:</span> evita di caricare foto in cui compaiono visi riconoscibili di persone. I visi eventualmente rilevati verranno oscurati automaticamente.
+            </p>
+          </div>
+
+          <div
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+            onClick={() => !detectingFaces && document.getElementById("file-input")?.click()}
+            className="aspect-[4/3] bg-surface-container-low rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container transition-colors"
+          >
+            {detectingFaces ? (
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 rounded-full border-3 border-primary border-t-transparent animate-spin" />
+                <p className="text-sm text-on-surface-variant font-medium">Analisi visi in corso...</p>
               </div>
-              <p className="text-on-surface font-semibold">Tocca per caricare la foto</p>
-              <p className="text-on-surface-variant text-xs mt-1">PNG, JPG o HEIC, max 10MB</p>
-            </>
-          )}
-          <input
-            id="file-input"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) handleFileChange(f);
-            }}
-          />
+            ) : preview ? (
+              <img src={preview} alt="Anteprima" className="max-h-full rounded-lg object-contain" />
+            ) : (
+              <>
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <span className="material-symbols-outlined text-3xl text-primary">cloud_upload</span>
+                </div>
+                <p className="text-on-surface font-semibold">Tocca per caricare la foto</p>
+                <p className="text-on-surface-variant text-xs mt-1">PNG, JPG o HEIC, max 10MB</p>
+              </>
+            )}
+            <input
+              id="file-input"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleFileChange(f);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Face blur feedback */}
+      {faceWarning && step >= 1 && (
+        <div className="flex items-start gap-3 bg-tertiary/10 rounded-lg p-4">
+          <span className="material-symbols-outlined text-tertiary shrink-0">face_retouching_off</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-on-surface">{faceWarning}</p>
+            <p className="text-xs text-on-surface-variant mt-0.5">Controlla l&apos;anteprima per verificare il risultato.</p>
+          </div>
         </div>
       )}
 

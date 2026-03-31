@@ -13,11 +13,17 @@ function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!termsAccepted) {
+      setError("Devi accettare i termini di utilizzo per procedere.");
+      return;
+    }
     setLoading(true);
     setError(null);
 
@@ -96,6 +102,29 @@ function SignupForm() {
           />
         </div>
 
+        {/* Terms acceptance */}
+        <div className="space-y-2">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="mt-1 w-4 h-4 accent-primary shrink-0"
+            />
+            <span className="text-xs text-on-surface-variant leading-relaxed">
+              Accetto i{" "}
+              <button
+                type="button"
+                onClick={() => setShowTerms(true)}
+                className="text-primary font-semibold underline hover:text-primary/80"
+              >
+                termini di utilizzo
+              </button>{" "}
+              e acconsento al riutilizzo delle foto caricate da parte di RainbowMap per finalità promozionali e pubblicitarie.
+            </span>
+          </label>
+        </div>
+
         {error && (
           <div className="bg-error-container rounded-lg p-3 flex items-center gap-2">
             <span className="material-symbols-outlined text-error text-sm">error</span>
@@ -111,6 +140,45 @@ function SignupForm() {
           {loading ? "Registrazione..." : "Crea account"}
         </button>
       </form>
+
+      {/* Terms modal */}
+      {showTerms && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={() => setShowTerms(false)}>
+          <div className="bg-surface-container rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-extrabold text-on-surface">Termini di utilizzo</h3>
+              <button onClick={() => setShowTerms(false)} className="text-on-surface-variant hover:text-on-surface">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="text-sm text-on-surface-variant leading-relaxed space-y-3">
+              <p className="font-bold text-on-surface">Licenza d&apos;uso delle immagini</p>
+              <p>
+                Caricando foto su RainbowMap, l&apos;utente concede a RainbowMap una licenza non esclusiva, gratuita, mondiale e irrevocabile per utilizzare, riprodurre, modificare, pubblicare e distribuire le immagini caricate, inclusi ma non limitati a:
+              </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Materiale promozionale e pubblicitario del servizio</li>
+                <li>Pubblicazioni sui canali social media di RainbowMap</li>
+                <li>Collaborazioni con terze parti a fini promozionali</li>
+                <li>Utilizzo editoriale e divulgativo</li>
+              </ul>
+              <p>
+                L&apos;utente dichiara di essere il legittimo autore delle foto caricate e di avere i diritti necessari per concedere la presente licenza. Le foto non devono contenere volti riconoscibili di persone senza il loro consenso.
+              </p>
+              <p className="font-bold text-on-surface">Privacy e dati personali</p>
+              <p>
+                Le informazioni di geolocalizzazione associate alle foto saranno visibili pubblicamente sulla mappa. L&apos;utente è responsabile di non condividere foto che rivelino informazioni sensibili sulla propria posizione abituale.
+              </p>
+            </div>
+            <button
+              onClick={() => { setTermsAccepted(true); setShowTerms(false); }}
+              className="w-full bg-vibrant-aura text-white font-bold py-3 rounded-full shadow-md active:scale-95 transition-transform"
+            >
+              Accetto i termini
+            </button>
+          </div>
+        </div>
+      )}
 
       <p className="text-center text-sm text-on-surface-variant mt-6">
         Hai gia un account?{" "}
